@@ -1,0 +1,11 @@
+# Copyright 2017-2020 by SDRausty. All rights reserved, see LICENSE 🌎 🌍 🌏
+# Hosting sdrausty.github.io/TermuxArch courtesy https://pages.github.com.
+# https://sdrausty.github.io/TermuxArch/README has info about this project.
+# https://sdrausty.github.io/TermuxArch/CONTRIBUTORS Thank you for your help.
+# Before regenerating the start script with `setupTermuxArch re[fresh]`, first copy this file to another name such as `fbinds.prs`.  Then add as many proot statements as you want; The init script will parse file `fbinds.prs` at refresh adding these proot options to `startarch`.  The space before the last double quote is necessary.  Examples are included for convenience:
+##############################################################################
+# PRoot bind usage: PROOTSTMNT+="-b host_path:guest_path " # the space before the last double quote is necessary
+# PROOTSTMNT+="-q /data/data/com.termux/files/usr/bin/qemu-x86_64 "
+# PROOTSTMNT+="-b /proc/:/proc/ "
+# [[ ! -r /dev/shm ]] && PROOTSTMNT+="-b /data/data/com.termux/files/home/arch/tmp:/dev/shm "
+# bindexample.prs EOF

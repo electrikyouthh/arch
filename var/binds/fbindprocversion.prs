@@ -1,0 +1,8 @@
+# Copyright 2017-2020 by SDRausty. All rights reserved, see LICENSE 🌎 🌍 🌏
+# Hosting sdrausty.github.io/TermuxArch courtesy https://pages.github.com.
+# https://sdrausty.github.io/TermuxArch/README has info about this project.
+# https://sdrausty.github.io/TermuxArch/CONTRIBUTORS Thank you for your help.
+##############################################################################
+# bind kernel information when /proc/version is accessed
+PROOTSTMNT+="-b /data/data/com.termux/files/home/arch/var/binds/fbindprocversion:/proc/version "
+# fbindprocversion.prs EOF

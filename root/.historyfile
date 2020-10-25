@@ -1,0 +1,91 @@
+    1  ls
+    2  exit
+    3  watch
+    4  man watch
+    5  watch --help
+    6  watch -d
+    7  exit
+    1  ls
+    2  exit
+    3  watch
+    4  man watch
+    5  watch --help
+    6  watch -d
+    7  exit
+    8  ls
+    9  cd /
+   10  ls
+   11  ls -al
+   12  ls
+   13  cd data/data
+   14  ls
+   15  cd com.termux/file/home
+   16  cd com.termux/files
+   17  cd home
+   18  ls
+   19  ls llvm-toolchain
+   20  ls
+   21  ls
+   22  cd llvm-toolchain
+   23  ls
+   24  cd ..
+   25  la
+   26  ls
+   27  ls 
+   28  whereis toolchain
+   29  cd ..
+   30  la
+   31  ls
+   32  ls usr
+   33  ls 
+   34  cd usr
+   35  ls share
+   36  ls etc
+   37  ls
+   38  ls var
+   39  ls tmp
+   40  ls lib
+   41  ls
+   42  ls include
+   43  ls
+   44  ls doc
+   45  ls sfc
+   46  ls src
+   47  cd ..
+   48  ls
+   49  cd ..
+   50  ls
+   51  cd ..
+   52  ls
+   53  ls -al
+   54  ls
+   55  cd ..
+   56  ls
+   57  ls -al
+   58  cd ..
+   59  ls
+   60  chgrp 
+   61  chgrp --help
+   62  exit
+    1  ls
+    2  cd stora
+    3  ls storage
+    4  ls bin
+    5  ls
+    6  ls storage/shared
+    7  lZ
+    8  ls
+    9  su
+   10  ls
+   11* pacman -S repo
+   12  cd /data/data/com.termux/files/home 
+   13  mkdir llvm-toolchain && cd llvm-toolchain
+   14  ls
+   15  repo init -u https://android.googlesource.com/platform/manifest -b llvm-toolchain
+   16  repo init -u https://android.googlesource.com/platform/manifest -b llvm-toolchain
+   17  git config --global user.email "electrikyouthx@hotmail.com" 
+   18  git config --global user.name "Electrik Youth"
+   19  repo init -u https://android.googlesource.com/platform/manifest -b llvm-toolchain
+   20  repo sync -c -j4
+   21  ls
+   22  exit

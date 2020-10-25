@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# Copyright 2017-2020 by SDRausty. All rights reserved, see LICENSE 🌎 🌍 🌏
+# Hosting sdrausty.github.io/TermuxArch courtesy https://pages.github.com.
+# https://sdrausty.github.io/TermuxArch/README has info about this project.
+# https://sdrausty.github.io/TermuxArch/CONTRIBUTORS Thank you for your help.
+##############################################################################
+IFS=$'\n\t'
+set -Eeuo pipefail
+shopt -s nullglob globstar
+unset LD_PRELOAD
+VERSIONID=2.0.257
+ 
+_TRPERR_() {  # run on script error
+	local RV="$?"
+	printf "\\e[?25h\\n\\e[1;48;5;138m %s\\e[0m\\n\\n" "TermuxArch WARNING:  Generated script signal ${RV:-UNKNOWN} near or at line number ${1:-UNKNOWN} by '${2:-COMMAND}'!"
+	exit 201
+}
+ 
+_TRPET_() {  # run on exit
+	local RV="$?" 
+  	printf "" 
+	 
+	if [[ "$RV" = 0 ]]
+	then
+		printf "\\e[0;32m%s\\e[1;34m: \\e[1;32m%s\\e[0m\\n\\e[0m" "${0##*/} $@ 2.0.257" "DONE 🏁 "
+		printf "\\e]2; %s: %s \007" "${0##*/} $@" "DONE 🏁 "
+	else 
+		printf "\\e[0;32m%s \\e[0m%s\\e[1;34m: \\e[1;32m%s\\e[0m\\n\\e[0m" "${0##*/} $@ 2.0.257" "[Exit Signal $RV]" "DONE  🏁 "
+		printf "\033]2; %s: %s %s \007" "${0##*/} $@" "[Exit Signal $RV]" "DONE 🏁 "
+	fi
+	printf "\e[?25h\e[0m"
+	set +Eeuo pipefail
+	exit
+}
+ 
+_TRPSIG_() {  # run on signal
+	printf "\\e[?25h\\e[1;7;38;5;0mTermuxArch WARNING:  Signal $? received!\\e[0m\\n"
+ 	exit 211
+}
+ 
+_TRPQ_() {  # run on quit
+	printf "\\e[?25h\\e[1;7;38;5;0mTermuxArch WARNING:  Quit signal $? received!\\e[0m\\n"
+ 	exit 221
+}
+ 
+trap '_TRPERR_ $LINENO $BASH_COMMAND $?' ERR
+trap _TRPET_ EXIT
+trap _TRPSIG_ HUP INT TERM
+trap _TRPQ_ QUIT
+ 
+## BEGIN #####################################################################
+
+COMMANDG="$(command -v getprop)" ||:
+if [[ "$COMMANDG" = "" ]]
+then
+ 		printf "\n\e[1;48;5;138mScript %s\e[0m\n\n" "startarch ${0##*/} WARNING:  Run ${0##*/} and /data/data/com.termux/files/home/arch/${0##*/} from the BASH shell in Termux:  Exiting..."
+exit 202
+fi
+declare -g AR2AR="${@:2}"
+declare -g AR3AR="${@:3}"
+_PRINTUSAGE_() {
+printf "\e]2;%s\007" "TermuxArch startarch help 📲"
+printf "\n\e[1;32m%s\e[0;32m%s\n\n" "startarch" "  start Arch Linux as root.  This account is reserved for system administration."
+printf "\e[1;32m%s\e[0;32m%s\n\n" "startarch c[ommand] command" "  run Arch Linux command from Termux as root user."
+printf "\e[1;32m%s\e[0;32m%s\e[1;32m%s\e[0;32m%s\n\n" "startarch l[ogin]|u[ser] user" "  login as user.  This option is preferred when installing software and using the command 'makeyay'."
+printf "\e[1;32m%s\e[0;32m%s\e[1;32m%s\e[0;32m%s\n\n" "startarch el[ogin]|eu[ser] user" "  use alternate elogin or euser option to login as user.  This option is preferred when using the command 'git' in shared storage."
+printf "\e[1;32m%s\e[0;32m%s\e[1;32m%s\e[0;32m%s\e[1;32m%s\e[0;32m%s\n\n" "startarch r[aw]" "  construct the " "startarch " "proot statement from exec.../bin/.  For example " "startarch r su " "will exec su in Arch Linux."
+printf "\e[1;32m%s\e[0;32m%s\e[1;32m%s\e[0;32m%s\n\n\e[0m" "startarch s[u] user command" "  login as user and execute command.  Use " "startarch c addauser user " "first to create this user and user's home directory."
+}
+# [] Default Arch Linux in Termux PRoot root login.
+if [[ -z "${1:-}" ]]
+then
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit --link2symlink -0 -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /root /usr/bin/env -i HOME=/root TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/bash -l ||: 
+set -Eeuo pipefail
+printf '\033]2; TermuxArch startarch 📲  \007'
+# [?|help] Displays usage information.
+elif [[ "${1//-}" = [?]* ]] || [[ "${1//-}" = [Hh]* ]]
+then
+_PRINTUSAGE_
+# [command ARGS] Execute a command in BASH as root.
+elif [[ "${1//-}" = [Cc]* ]]
+then
+printf '\033]2; startarch command 📲  \007'
+touch /data/data/com.termux/files/home/arch/root/.chushlogin
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit --link2symlink -0 -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /root /usr/bin/env -i HOME=/root TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/bash -lc "$AR2AR" ||:
+set -Eeuo pipefail
+printf '\033]2; startarch command 📲  \007'
+rm -f /data/data/com.termux/files/home/arch/root/.chushlogin
+# [l[ogin] user|u[ser] user [options]] Login as user [plus options].  Use 'addauser user' first to create this user and the user's home directory.  This option is for installing and working with programs that build other programs, and for working with the 'git' command, but the 'git’ might not work as expected in all situations.
+elif [[ "${1//-}" = [Ll]* ]] || [[ "${1//-}" = [Uu]* ]]
+then
+printf '\033]2; startarch login user [options] 📲  \007'
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit --link2symlink -i "$AR2AR:wheel" -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /home/$AR2AR /usr/bin/env -i HOME=/home/$AR2AR TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/su - "$AR2AR" ||:
+set -Eeuo pipefail
+printf '\033]2; startarch command 📲  \007'
+rm -f /data/data/com.termux/files/home/arch/root/.chushlogin
+# [el[ogin] user|eu[ser] user [options]] Login as user [plus options].  Use 'addauser user' first to create this user and the user's home directory.  This option is for working with programs that have already been installed, and for working with the 'git' command.
+elif [[ "${1//-}" = e[Ll]* ]] || [[ "${1//-}" = e[Uu]* ]]
+then
+printf '\033]2; startarch login user [options] 📲  \007'
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit -i "$AR2AR:wheel" -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /home/$AR2AR /usr/bin/env -i HOME=/home/$AR2AR TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/su - "$AR2AR" ||:
+set -Eeuo pipefail
+printf '\033]2; startarch login user [options] 📲  \007'
+# [raw ARGS] Construct the 'startarch' proot statement.  For example 'startarch r su' will exec su in Arch Linux.  See PROOTSTMNT for more options; share your thoughts at https://github.com/sdrausty/TermuxArch/issues and https://github.com/sdrausty/TermuxArch/pulls.
+elif [[ "${1//-}" = [Rr]* ]]
+then
+printf '\033]2; startarch raw ARGS 📲  \007'
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit --link2symlink -0 -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /root /usr/bin/env -i HOME=/root TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/"$AR2AR" ||:
+set -Eeuo pipefail
+printf '\033]2; startarch raw ARGS 📲  \007'
+# [su user command] Login as user and execute command.  Use 'addauser user' first to create this user and user's home directory.
+elif [[ "${1//-}" = [Ss]* ]]
+then
+printf '\033]2; startarch su user command 📲  \007'
+if [[ "$2" = root ]]
+then
+touch /data/data/com.termux/files/home/arch/root/.chushlogin
+else
+touch /data/data/com.termux/files/home/arch/home/"$2"/.chushlogin
+fi
+set +Eeuo pipefail
+umask 0022
+exec proot --kernel-release=3.18.71-perf+-generic --kill-on-exit -i "$AR2AR:wheel" -r /data/data/com.termux/files/home/arch -b /dev/ashmem:/dev/ashmem -b /storage/:/storage/ -b /data/data/com.termux/files/home:/data/data/com.termux/files/home -b /dev/urandom:/dev/random -b /sdcard:/sdcard -b /sys/:/sys/ -b /data/data/com.termux/files/usr:/data/data/com.termux/files/usr -b /dev/:/dev/ -b /proc/:/proc/ -b /vendor/:/vendor/ -b /proc/self/fd:/dev/fd -b /system/:/system/ -b /data/data/com.termux/files/home/arch/tmp:/dev/shm -b /data/data/com.termux/files/home/arch/var/binds/fbindprocstat:/proc/stat -w /home/$AR2AR /usr/bin/env -i HOME=/home/$AR2AR TERM="xterm-256color" TMPDIR=/tmp ANDROID_DATA=/data  /bin/su - "$2" -c "$AR3AR" ||:
+set -Eeuo pipefail
+printf '\033]2; startarch su user command 📲  \007'
+if [[ "$2" = root ]]
+then
+rm -f /data/data/com.termux/files/home/arch/root/.chushlogin
+else
+rm -f /data/data/com.termux/files/home/arch/home/"$2"/.chushlogin
+fi
+else
+_PRINTUSAGE_
+fi
+# startarch EOF

@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libalpm
+Description: Arch Linux package management library
+URL: http://www.archlinux.org/pacman/
+Version: 12.0.2
+Requires.private: libarchive libcrypto libcurl gpgme
+Cflags: -I${includedir} -D_FILE_OFFSET_BITS=64
+Libs: -L${libdir} -lalpm
+Libs.private: -lm  

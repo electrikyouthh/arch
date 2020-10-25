@@ -1,0 +1,9 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/repo
+usr/share/
+usr/share/doc/
+usr/share/doc/repo/
+usr/share/doc/repo/manifest-format.md
+

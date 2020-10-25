@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# Copyright 2017-2020 by SDRausty. All rights reserved, see LICENSE 🌎 🌍 🌏
+# Hosting sdrausty.github.io/TermuxArch courtesy https://pages.github.com.
+# https://sdrausty.github.io/TermuxArch/README has info about this project.
+# https://sdrausty.github.io/TermuxArch/CONTRIBUTORS Thank you for your help.
+# Watch available entropy on device.
+# cat /proc/sys/kernel/random/entropy_avail contributor https://github.com/cb125
+##############################################################################
+IFS=$'\n\t'
+set -Eeuo pipefail
+shopt -s nullglob globstar
+unset LD_PRELOAD
+VERSIONID=2.0.257
+ 
+_TRPERR_() {  # run on script error
+	local RV="$?"
+	printf "\\e[?25h\\n\\e[1;48;5;138m %s\\e[0m\\n\\n" "TermuxArch WARNING:  Generated script signal ${RV:-UNKNOWN} near or at line number ${1:-UNKNOWN} by '${2:-COMMAND}'!"
+	exit 201
+}
+ 
+_TRPET_() {  # run on exit
+	local RV="$?" 
+  	printf "" 
+	 
+	if [[ "$RV" = 0 ]]
+	then
+		printf "\\e[0;32m%s\\e[1;34m: \\e[1;32m%s\\e[0m\\n\\e[0m" "${0##*/} $@ 2.0.257" "DONE 🏁 "
+		printf "\\e]2; %s: %s \007" "${0##*/} $@" "DONE 🏁 "
+	else 
+		printf "\\e[0;32m%s \\e[0m%s\\e[1;34m: \\e[1;32m%s\\e[0m\\n\\e[0m" "${0##*/} $@ 2.0.257" "[Exit Signal $RV]" "DONE  🏁 "
+		printf "\033]2; %s: %s %s \007" "${0##*/} $@" "[Exit Signal $RV]" "DONE 🏁 "
+	fi
+	printf "\e[?25h\e[0m"
+	set +Eeuo pipefail
+	exit
+}
+ 
+_TRPSIG_() {  # run on signal
+	printf "\\e[?25h\\e[1;7;38;5;0mTermuxArch WARNING:  Signal $? received!\\e[0m\\n"
+ 	exit 211
+}
+ 
+_TRPQ_() {  # run on quit
+	printf "\\e[?25h\\e[1;7;38;5;0mTermuxArch WARNING:  Quit signal $? received!\\e[0m\\n"
+ 	exit 221
+}
+ 
+trap '_TRPERR_ $LINENO $BASH_COMMAND $?' ERR
+trap _TRPET_ EXIT
+trap _TRPSIG_ HUP INT TERM
+trap _TRPQ_ QUIT
+ 
+
+i=1
+multi=16
+entropy0=$(cat /proc/sys/kernel/random/entropy_avail 2>/dev/null)
+
+printintro() {
+printf "\\n\\e[1;32mTermuxArch Watch Entropy:\\n"'\033]2; TermuxArch Watch Entropy 📲  \007'
+}
+
+_PRINTTAIL_() {
+printf "\\n\\n\\e[1;32mTermuxArch Watch Entropy 🏁 \\n\\n"'\033]2; TermuxArch Watch Entropy 🏁 \007'
+}
+
+_PRINTUSAGE_() {
+printf "\\n\\e[0;32mUsage:  \\e[1;32mwe \\e[0;32m Watch Entropy sequential.\\n\\n	\\e[1;32mwe sequential\\e[0;32m Watch Entropy sequential.\\n\\n	\\e[1;32mwe simple\\e[0;32m Watch Entropy simple.\\n\\n	\\e[1;32mwe verbose\\e[0;32m Watch Entropy verbose.\\n\\n"'\033]2; TermuxArch Watch Entropy 📲  \007'
+}
+
+infif() {
+if [[ $entropy0 = "inf" ]] || [[ $entropy0 = "" ]] || [[ $entropy0 = "0" ]]
+then
+entropy0=1000
+printf "\\e[1;32m∞^∞infifinfif2minfifinfifinfifinfif∞=1\\e[0;32minfifinfifinfifinfif\\e[0;32m∞==0infifinfifinfifinfif\\e[0;32minfifinfifinfif∞"
+fi
+}
+
+en0=$((${entropy0}*$multi))
+
+esleep() {
+int=$(echo "$i/$entropy0" | bc -l)
+for i in {1..5}; do
+if (( $(echo "$int > 0.1"|bc -l) ))
+then
+tmp=$(echo "${int}/100" | bc -l)
+int=$tmp
+fi
+if (( $(echo "$int > 0.1"|bc -l) ))
+then
+break
+fi
+done
+}
+
+1sleep() {
+sleep 0.1
+}
+
+bcif() {
+commandif=$(command -v getprop) ||:
+if [[ $commandif = "" ]]
+then
+abcif=$(command -v bc) ||:
+if [[ $abcif = "" ]]
+then
+printf "\\e[1;34mInstalling \\e[0;32mbc\\e[1;34m...\\n\\n\\e[1;32m"
+pci bc
+printf "\\n\\e[1;34mInstalling \\e[0;32mbc\\e[1;34m: \\e[1;32mDONE 🏁\\n\\e[0m"
+fi
+else
+tbcif=$(command -v bc) ||:
+if [[ $tbcif = "" ]]
+then
+printf "\\e[1;34mInstalling \\e[0;32mbc\\e[1;34m...\\n\\n\\e[1;32m"
+apt install bc --yes
+printf "\\n\\e[1;34mInstalling \\e[0;32mbc\\e[1;34m: \\e[1;32mDONE 🏁\\n\\e[0m"
+fi
+fi
+}
+
+entropysequential() {
+printf "\\n\\e[1;32mWatch Entropy Sequential:\\n\\n"'\033]2; Watch Entropy Sequential 📲  \007'
+for i in $(seq 1 $en0); do
+entropy0=$(cat /proc/sys/kernel/random/entropy_avail 2>/dev/null)
+infif
+printf "\\e[1;30m $en0 \\e[0;32m$i \\e[1;32m${entropy0}\\n"
+1sleep
+done
+}
+
+entropysimple() {
+printf "\\n\\e[1;32mWatch Entropy Simple:\\n\\n"'\\e]2; Watch Entropy Simple 📲  \007'
+for i in $(seq 1 $en0); do
+entropy0=$(cat /proc/sys/kernel/random/entropy_avail 2>/dev/null)
+infif
+printf "\\e[1;32m${entropy0} "
+1sleep
+done
+}
+
+entropyverbose() {
+printf "\\n\\e[1;32mWatch Entropy Verbose:\\n\\n"'\033]2; Watch Entropy Verbose 📲  \007'
+for i in $(seq 1 $en0); do
+entropy0=$(cat /proc/sys/kernel/random/entropy_avail 2>/dev/null)
+infif
+printf "\\e[1;30m $en0 \\e[0;32m$i \\e[1;32m${entropy0} \\e[0;32m#E&&√♪"
+esleep
+sleep $int
+entropy1=$(cat /proc/sys/kernel/random/uuid 2>/dev/null)
+infif
+printf "$entropy1"
+esleep
+sleep $int
+printf "&&π™♪&##|♪FLT"
+esleep
+sleep $int
+printf "$int♪||e"
+esleep
+sleep $int
+done
+}
+
+# [we sequential] Run sequential watch entropy.
+if [[ -z "${1:-}" ]]
+then
+printintro
+entropysequential
+elif [[ $1 = [Ss][Ee]* ]] || [[ $1 = -[Ss][Ee]* ]] || [[ $1 = --[Ss][Ee]* ]]
+then
+printintro
+entropysequential
+# [we simple] Run simple watch entropy.
+elif [[ $1 = [Ss]* ]] || [[ $1 = -[Ss]* ]] || [[ $1 = --[Ss]* ]]
+then
+printintro
+entropysimple
+# [we verbose] Run verbose watch entropy.
+elif [[ $1 = [Vv]* ]] || [[ $1 = -[Vv]* ]] || [[ $1 = --[Vv]* ]]
+then
+printintro
+bcif
+entropyverbose
+# [] Run default watch entropy.
+elif [[ $1 = "" ]]
+then
+printintro
+entropysequential
+else
+_PRINTUSAGE_
+fi
+_PRINTTAIL_
+# we EOF
